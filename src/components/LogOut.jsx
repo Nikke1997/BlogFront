@@ -1,19 +1,19 @@
-import React from "react";
+import React from 'react'
 
 
 const LogOut = () => {
-const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogappUser');
-    window.location.reload();
-    }
-    
-    return (
-        <div className="logout">
-        <button onClick={handleLogout}>
-        Log Out
-        </button>
-        </div>
-    );
-    }
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogappUser')
+    window.location.reload()
+  }
 
-export default LogOut;
+  return (
+    <div className="logout">
+      <button onClick={handleLogout}>
+        Log Out
+      </button>
+    </div>
+  )
+}
+
+export default LogOut
