@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -6,6 +6,7 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import LogOut from './components/LogOut'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -14,19 +15,44 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: '',
-    likes: ''
-  })
+  const [blogAdded, setBlogAdded] = useState(false)
+ 
+
+
+
+
+  // Add blog
+  const addBlog = async (newBlog) => {
+    blogFormRef.current.toggleVisibility()
+    try {
+    await blogService.create(newBlog).then(returnedBlog => {
+      setBlogs(blogs.concat(returnedBlog))
+      setBlogAdded(true)
+      setMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 1000)
+    })}
+    catch (exception) {
+      setErrorMessage('Error adding blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 1000)
+    }
+  }
 
   // Get all blogs
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+    const fetchData = async () => {
+      const fetchedBlogs = await blogService.getAll()
+      const sortedBlogs = fetchedBlogs.sort((a, b) => b.likes - a.likes)
+      setBlogs(sortedBlogs)
+    }
+    fetchData();
+    setBlogAdded(false);
+  }, [blogAdded])
+
+  console.log('blogs', blogs)
 
   // Get user from local storage
   useEffect(() => {
@@ -40,12 +66,6 @@ const App = () => {
 
   console.log('user', user)
   
-  // Handle blog change
-  const handleBlogChange = (event) => {
-    setNewBlog({ ...newBlog, [event.target.name]: event.target.value })
-  }
-
-
   // Login
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -75,24 +95,11 @@ const App = () => {
   }
   }
 
-  // Add blog
-  const addBlog = async (event) => {
-    event.preventDefault()
-    try {
-    await blogService.create(newBlog).then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
-      setMessage(`A new blog ${newBlog.title} by ${newBlog.author} added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 1000)
-    })}
-    catch (exception) {
-      setErrorMessage('Error adding blog')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 1000)
-    }
-  }
+  
+  
+
+  
+const blogFormRef = useRef();
 
 
 
@@ -115,15 +122,19 @@ const App = () => {
         <div className='bloglist'>
         <LogOut />
         <h2>Blogs</h2>
+        <section className='bareBlogs'>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} user={user}/>
       )}
+      </section>
       </div>
 
+      <Togglable buttonLabel='New Blog' ref={blogFormRef}>
       <div className='blogform'>
-      <p>{user.name} Logged in</p>
-      <BlogForm addBlog={addBlog} newBlog={newBlog} handleBlogChange={handleBlogChange} />
+      <p>Logged in as {user.username} </p>
+      <BlogForm addBlog={addBlog}/>
       </div>
+      </Togglable>
 
       </div>
       }

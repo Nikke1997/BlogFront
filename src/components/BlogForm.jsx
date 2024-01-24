@@ -1,6 +1,41 @@
-const BlogForm = ({ addBlog, newBlog, handleBlogChange }) => (
+import { useState } from "react"
+
+
+const BlogForm = ({ addBlog }) => {
+    const [newBlog, setNewBlog] = useState({
+        title: '',
+        author: '',
+        url: ''
+      })
+
+
+      console.log(newBlog)
+
+      // Handle blog change
+  const handleBlogChange = (event) => {
+    setNewBlog({ ...newBlog, [event.target.name]: event.target.value })
+  }
+
+
+  const createBlog = (event) => {
+    event.preventDefault()
+    addBlog({
+      title: newBlog.title,
+      author: newBlog.author,
+        url: newBlog.url
+    })
+    setNewBlog({
+        title: '',
+        author: '',
+        url: ''
+        })
+    }
+
+
+
+return (
     <div>
-    <form onSubmit={addBlog}>
+    <form onSubmit={createBlog}>
       <h2>Create new</h2>
       <div>
       <label htmlFor="title">Title: </label>
@@ -34,20 +69,10 @@ const BlogForm = ({ addBlog, newBlog, handleBlogChange }) => (
       onChange={handleBlogChange}
       />
       </div>
-      <br/>
-      <div>
-      <label htmlFor="likes">Likes: </label>
-      <input 
-      type="number"
-      name="likes"
-      id='likes'
-      value={newBlog.likes}
-      onChange={handleBlogChange}
-      />
-      </div>
       <button type="submit">Save</button>
     </form>
     </div>
-  )
+)
+}
 
   export default BlogForm
