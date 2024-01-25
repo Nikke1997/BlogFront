@@ -39,45 +39,30 @@ describe("Blog ", function () {
       cy.get("#uname").type("test");
       cy.get("#password").type("test");
       cy.get("#login-button").click();
-    });
-
-    it("new blog can be created", function () {
       cy.contains("New Blog").click();
       cy.get("#title").type("Test Title");
       cy.get("#Author").type("Test Author");
       cy.get("#url").type("www.test.com");
       cy.get("#save").click();
+    });
+
+    it("new blog can be created", function () {
       cy.contains("new blog Test Title by Test Author added");
     });
 
     it("user can like a blog", function () {
-      cy.contains("New Blog").click();
-      cy.get("#title").type("Test Title");
-      cy.get("#Author").type("Test Author");
-      cy.get("#url").type("www.test.com");
-      cy.get("#save").click();
       cy.contains("view").click();
       cy.contains("Like").click();
       cy.contains("Likes: 1");
     });
 
     it("user can delete a blog", function () {
-      cy.contains("New Blog").click();
-      cy.get("#title").type("Test Title");
-      cy.get("#Author").type("Test Author");
-      cy.get("#url").type("www.test.com");
-      cy.get("#save").click();
       cy.contains("view").click();
       cy.contains("Remove").click();
       cy.contains("Blog Test Title by Test Author removed");
     });
 
     it("Only the user who created a blog can delete it", function () {
-      cy.contains("New Blog").click();
-      cy.get("#title").type("Test Title");
-      cy.get("#Author").type("Test Author");
-      cy.get("#url").type("www.test.com");
-      cy.get("#save").click();
       cy.contains("Remove");
       cy.contains("Log Out").click();
       const user = {
@@ -92,8 +77,12 @@ describe("Blog ", function () {
       cy.contains("view").click();
       cy.contains("Remove").should("not.exist");
     });
-
+  });
+  describe("and several blogs exist", function () {
     it.only("blogs are ordered according to likes", function () {
+      cy.get("#uname").type("test");
+      cy.get("#password").type("test");
+      cy.get("#login-button").click();
       cy.contains("New Blog").click();
       cy.get("#title").type("Test Title");
       cy.get("#Author").type("Test Author");
