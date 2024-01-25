@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog, user, handleLike, updatedBlog, handleRemove }) => {
   const [view, setView] = useState(false)
-  const [updatedBlog, setUpdatedBlog] = useState(blog)
 
 
 
@@ -12,48 +11,22 @@ const Blog = ({ blog, user }) => {
     setView(!view)
   }
 
-  //Like blog
-  const handleLike = async () => {
-    try {
-      const updated = await blogService.update(blog.id, {
-        title: updatedBlog.title,
-        author: updatedBlog.author,
-        url: updatedBlog.url,
-        likes: updatedBlog.likes + 1,
-      })
-      setUpdatedBlog(updated)
-    } catch (exception) {
-      console.log('error')
-    }
-  }
-
-  //Remove blog
-  const handleRemove = async () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      try {
-        await blogService.remove(updatedBlog.id)
-        setUpdatedBlog(null)
-      } catch (exception) {
-        console.log('error')
-      }
-    }
-  }
 
   //Render blog view based on view state
   const blogView = () => {
     const username = blog.user.username
     return (
-      <div>
-        {updatedBlog && (
+      <div className='blog'>
+        {blog && (
           <section className="insideBlog">
             <p>
-              {updatedBlog.title} by {updatedBlog.author}
+              {blog.title} by {blog.author}
             </p>
             {view && (
               <>
-                <p>URL: {updatedBlog.url}</p>
+                <p>URL: {blog.url}</p>
                 <p>
-                  Likes: {updatedBlog.likes}{' '}
+                  Likes: {blog.likes}{' '}
                   <button onClick={handleLike}>Like</button>
                 </p>
                 <p>{username}</p>
